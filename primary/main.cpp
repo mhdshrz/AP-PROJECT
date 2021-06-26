@@ -489,16 +489,6 @@ int main () {
 
         sortfslist(prodlist);
 
-//        int x = 1;
-
-//        for(auto i = prodlist.begin(); i != prodlist.end(); i++) {
-
-//            cout << x << ". " << i->get_name() << ' ' << i->get_type() << ' ' << i->get_group() << ' ';
-//            cout << i->get_producer() << ' ' << i->get_price() << ' ' << i->get_quantity() << ' ' << endl;
-
-//            x++;
-//        }
-
         cout << endl << "Files were opened successfully!" << endl << endl;
         cout << "Press Enter to continue: ";
 
@@ -509,6 +499,8 @@ int main () {
         //files end
 
         print_menu(larlist, prodlist);
+        
+        rfile.close();
 
     }
 
@@ -804,6 +796,8 @@ void show (string group, fslist& prodlist) {
 
 void print_products_out (char ch, fslist& prodlist) {
 
+    //show the whole products
+
     if(ch == '1') {
 
         while(true) {
@@ -841,77 +835,98 @@ void print_products_out (char ch, fslist& prodlist) {
 
     }
 
+    //show all within a group
+
     else if(ch == '2') {
 
-        set<string> gl;
+        set<string> glist;
 
-        for(fslist :: iterator itr = prodlist.begin(); itr != prodlist.end(); itr++) gl.insert(itr->get_group());
+        for(fslist :: iterator itr = prodlist.begin(); itr != prodlist.end(); itr++) {
 
-        system("cls");
+            glist.insert(itr->get_group());
 
-        cout <<"\nThese are all groups listed:\n\n";
+        }
 
-        int x = 1;
+        while(true) {
 
-        for(set<string> :: iterator itr = gl.begin(); itr != gl.end(); itr++) {
+            system("cls");
 
-            if(x < 10) {
+            cout <<"\nThese are all groups listed:\n\n";
 
-                cout << "    0" << x << ". " << *itr << endl;
-                cout << "    --------------------------------------\n";
+            int x = 1, itr_cnt;
 
-                x++;
+            for(set<string> :: iterator itr = glist.begin(); itr != glist.end(); itr++) {
+
+                if(x < 10) {
+
+                    cout << "    0" << x << ". " << *itr << endl;
+                    cout << "    --------------------------------------\n";
+
+                    x++;
+
+                }
+
+                else {
+
+                    cout << "    " << x << *itr << endl;
+                    cout << "    --------------------------------------\n";
+
+                    x++;
+
+                }
 
             }
 
-            else {
+            cout << endl << endl << "    " << x << ". Back\n\n\n";
 
-                cout << "    " << x << *itr << endl;
-                cout << "    --------------------------------------\n";
+            cout << "Enter the number before the wanted group: ";
 
-                x++;
+            char cha;
+
+            cha = getch();
+
+            itr_cnt = (int) (cha-48);
+
+            if(itr_cnt == x) break;
+
+            set<string> :: iterator itr;
+
+            while(true) {
+
+                itr = glist.begin();
+
+                for(int i = 0; i < itr_cnt - 1; i++) itr++;
+
+                system("cls");
+
+                //showing all from the specific group
+
+                show(*itr, prodlist);
+
+                cout << "\n\n    1.Search\n\n    2.Back\n\n    3.Exit\n\n";
+                cout << "    Enter one of above numbers: ";
+
+                cha = getch();
+
+                if(cha == '1') {
+
+                    search(prodlist, *itr);
+
+                }
+
+                else if(cha == '2') {
+
+                    break;
+
+                }
+
+                else if(cha == '3') {
+
+                    exit_m();
+
+                }
 
             }
-
-        }
-
-        cout << "\n\n\nEnter the number before the wanted group: ";
-
-        char cha;
-
-        cha = getch();
-
-        x = (int) (cha-48);
-
-        set<string> :: iterator itr;
-        itr = gl.begin();
-
-        for(int i = 0; i < x-1; i++) itr++;
-
-        system("cls");
-
-        show(*itr, prodlist);
-
-        cout << "\n\n    1.Search\n\n    2.Back\n\n    3.Exit\n\n";
-        cout << "    Enter one of above numbers: ";
-
-        cha = getch();
-
-        if(cha == '1') {
-
-            search(prodlist, *itr);
-
-        }
-
-        else if(cha == '2') {
-
-            return;
-
-        }
-
-        else if(cha == '3') {
-
-            exit_m();
 
         }
 
@@ -932,491 +947,495 @@ void print_products_out (char ch, fslist& prodlist) {
 
 void search (fslist& prodlist) {
 
-    system("cls");
-
     string search;
     char ch, ch_by_ch;
 
-    cout << "\n    Based on:\n\n\t1. Name\n\n\t2. Type\n\n";
-    cout << "\t3. Group\n\n\t4. Producer\n\n\t5. Price\n\n";
-    cout << "\t6. Back\n\n\t7. Exit\n\n\tEnter one of above numbers: ";
+    while(true) {
 
-    ch = getch();
+        system("cls");
 
-    //search based on name
+        cout << "\n    Based on:\n\n\t1. Name\n\n\t2. Type\n\n";
+        cout << "\t3. Group\n\n\t4. Producer\n\n\t5. Price\n\n";
+        cout << "\t6. Back\n\n\t7. Exit\n\n\tEnter one of above numbers: ";
 
-    if(ch == '1') {
+        ch = getch();
 
-        while(true) {
+        //search based on name
 
-            system("cls");
+        if(ch == '1') {
 
-            cout << "\n\n    (Search here) Enter: " << search;
-            cout << "\n    ----------------------------------------------------";
-            cout << "-------------------------------------------------------\n\n";
+            while(true) {
 
-            for(int j = 0; j < prodlist.size(); j++) {
+                system("cls");
 
-                if(findsubstr(prodlist[j].get_name(), search)) {
+                cout << "\n\n    (Search here) Enter: " << search;
+                cout << "\n    ----------------------------------------------------";
+                cout << "-------------------------------------------------------\n\n";
 
-                    if(j < 9) {
+                for(int j = 0; j < prodlist.size(); j++) {
 
-                        cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
+                    if(findsubstr(prodlist[j].get_name(), search)) {
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                        if(j < 9) {
 
-                        cout << ' ' << prodlist[j].get_type();
+                            cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_group();
+                            cout << ' ' << prodlist[j].get_type();
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            cout << ' ' << prodlist[j].get_group();
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                    }
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                    else {
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        cout << "    " << j + 1 << ". " << prodlist[j].get_name();
+                        }
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                        else {
 
-                        cout << ' ' << prodlist[j].get_type();
+                            cout << "    " << j + 1 << ". " << prodlist[j].get_name();
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_group();
+                            cout << ' ' << prodlist[j].get_type();
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            cout << ' ' << prodlist[j].get_group();
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                    }
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                }
 
-            }
-
-            ch_by_ch = getch();
-
-            if(ch_by_ch == '^') break;
-
-            if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
-            else if(ch_by_ch == '*' && search == "");
-            else search += ch_by_ch;
-
-        }
-
-    }
-
-    //search based on type
-
-    else if(ch == '2') {
-
-        while(true) {
-
-            system("cls");
-
-            cout << "\n\n    (Search here) Enter: " << search;
-            cout << "\n    ----------------------------------------------------";
-            cout << "-------------------------------------------------------\n\n";
-
-            for(int j = 0; j < prodlist.size(); j++) {
-
-                if(findsubstr(prodlist[j].get_type(), search)) {
-
-                    if(j < 9) {
-
-                        cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
-
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_type();
-
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_group();
-
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_producer();
-
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_price() << " T";
-
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
-
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
-
-                    }
-
-                    else {
-
-                        cout << "    " << j + 1 << ". " << prodlist[j].get_name();
-
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_type();
-
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_group();
-
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_producer();
-
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_price() << " T";
-
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
-
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
-
+                        }
 
                     }
 
                 }
 
+                ch_by_ch = getch();
+
+                if(ch_by_ch == '^') break;
+
+                if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
+                else if(ch_by_ch == '*' && search == "");
+                else search += ch_by_ch;
+
             }
-
-            ch_by_ch = getch();
-
-            if(ch_by_ch == '^') break;
-
-            if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
-            else if(ch_by_ch == '*' && search == "");
-            else search += ch_by_ch;
 
         }
 
-    }
+        //search based on type
 
-    //search based on group
+        else if(ch == '2') {
 
-    else if(ch == '3') {
+            while(true) {
 
-        while(true) {
+                system("cls");
 
-            system("cls");
+                cout << "\n\n    (Search here) Enter: " << search;
+                cout << "\n    ----------------------------------------------------";
+                cout << "-------------------------------------------------------\n\n";
 
-            cout << "\n\n    (Search here) Enter: " << search;
-            cout << "\n    ----------------------------------------------------";
-            cout << "-------------------------------------------------------\n\n";
+                for(int j = 0; j < prodlist.size(); j++) {
 
-            for(int j = 0; j < prodlist.size(); j++) {
+                    if(findsubstr(prodlist[j].get_type(), search)) {
 
-                if(findsubstr(prodlist[j].get_group(), search)) {
+                        if(j < 9) {
 
-                    if(j < 9) {
+                            cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
 
-                        cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
+                        }
 
-                    }
+                        else {
 
-                    else {
+                            cout << "    " << j + 1 << ". " << prodlist[j].get_name();
 
-                        cout << "    " << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
 
+                        }
 
                     }
 
                 }
 
+                ch_by_ch = getch();
+
+                if(ch_by_ch == '^') break;
+
+                if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
+                else if(ch_by_ch == '*' && search == "");
+                else search += ch_by_ch;
+
             }
-
-            ch_by_ch = getch();
-
-            if(ch_by_ch == '^') break;
-
-            if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
-            else if(ch_by_ch == '*' && search == "");
-            else search += ch_by_ch;
 
         }
 
-    }
+        //search based on group
 
-    //search based on producer
+        else if(ch == '3') {
 
-    else if(ch == '4') {
+            while(true) {
 
-        while(true) {
+                system("cls");
 
-            system("cls");
+                cout << "\n\n    (Search here) Enter: " << search;
+                cout << "\n    ----------------------------------------------------";
+                cout << "-------------------------------------------------------\n\n";
 
-            cout << "\n\n    (Search here) Enter: " << search;
-            cout << "\n    ----------------------------------------------------";
-            cout << "-------------------------------------------------------\n\n";
+                for(int j = 0; j < prodlist.size(); j++) {
 
-            for(int j = 0; j < prodlist.size(); j++) {
+                    if(findsubstr(prodlist[j].get_group(), search)) {
 
-                if(findsubstr(prodlist[j].get_producer(), search)) {
+                        if(j < 9) {
 
-                    if(j < 9) {
+                            cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
 
-                        cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
+                        }
 
-                    }
+                        else {
 
-                    else {
+                            cout << "    " << j + 1 << ". " << prodlist[j].get_name();
 
-                        cout << "    " << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
 
+                        }
 
                     }
 
                 }
 
+                ch_by_ch = getch();
+
+                if(ch_by_ch == '^') break;
+
+                if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
+                else if(ch_by_ch == '*' && search == "");
+                else search += ch_by_ch;
+
             }
-
-            ch_by_ch = getch();
-
-            if(ch_by_ch == '^') break;
-
-            if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
-            else if(ch_by_ch == '*' && search == "");
-            else search += ch_by_ch;
 
         }
 
-    }
+        //search based on producer
 
-    //search based on price
+        else if(ch == '4') {
 
-    else if(ch == '5') {
+            while(true) {
 
-        while(true) {
+                system("cls");
 
-            system("cls");
+                cout << "\n\n    (Search here) Enter: " << search;
+                cout << "\n    ----------------------------------------------------";
+                cout << "-------------------------------------------------------\n\n";
 
-            cout << "\n\n    (Search here) Enter: " << search;
-            cout << "\n    ----------------------------------------------------";
-            cout << "-------------------------------------------------------\n\n";
+                for(int j = 0; j < prodlist.size(); j++) {
 
-            string int_string;
+                    if(findsubstr(prodlist[j].get_producer(), search)) {
 
-            for(int j = 0; j < prodlist.size(); j++) {
+                        if(j < 9) {
 
-                int_string = to_string(prodlist[j].get_price());
+                            cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
 
-                if(findsubstr(int_string, search)) {
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                    if(j < 9) {
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                        }
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                        else {
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
+                            cout << "    " << j + 1 << ". " << prodlist[j].get_name();
 
-                    }
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                    else {
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << "    " << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
-
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
-
+                        }
 
                     }
 
                 }
 
+                ch_by_ch = getch();
+
+                if(ch_by_ch == '^') break;
+
+                if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
+                else if(ch_by_ch == '*' && search == "");
+                else search += ch_by_ch;
+
             }
 
-            ch_by_ch = getch();
+        }
 
-            if(ch_by_ch == '^') break;
+        //search based on price
 
-            if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
-            else if(ch_by_ch == '*' && search == "");
-            else search += ch_by_ch;
+        else if(ch == '5') {
+
+            while(true) {
+
+                system("cls");
+
+                cout << "\n\n    (Search here) Enter: " << search;
+                cout << "\n    ----------------------------------------------------";
+                cout << "-------------------------------------------------------\n\n";
+
+                string int_string;
+
+                for(int j = 0; j < prodlist.size(); j++) {
+
+                    int_string = to_string(prodlist[j].get_price());
+
+                    if(findsubstr(int_string, search)) {
+
+                        if(j < 9) {
+
+                            cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
+
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_type();
+
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_group();
+
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_producer();
+
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_price() << " T";
+
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
+
+                        }
+
+                        else {
+
+                            cout << "    " << j + 1 << ". " << prodlist[j].get_name();
+
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_type();
+
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_group();
+
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_producer();
+
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_price() << " T";
+
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
+
+                        }
+
+                    }
+
+                }
+
+                ch_by_ch = getch();
+
+                if(ch_by_ch == '^') break;
+
+                if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
+                else if(ch_by_ch == '*' && search == "");
+                else search += ch_by_ch;
+
+            }
+
+        }
+
+        //back
+
+        else if(ch == '6') {
+
+            return;
+
+        }
+
+        //exit
+
+        else if(ch == '7') {
+
+            exit_m();
 
         }
 
     }
 
-    //back
-
-    else if(ch == '6') {
-
-        return;
-
-    }
-
-    //exit
-
-    else if(ch == '7') {
-
-        exit_m();
-
-    }
+    return;
 
 }
 
@@ -1431,491 +1450,494 @@ void search (fslist& prodlist) {
 
 void search (fslist& prodlist, string group) {
 
-    system("cls");
-
     string search;
     char ch, ch_by_ch;
 
-    cout << "\n    Based on:\n\n\t1. Name\n\n\t2. Type\n\n";
-    cout << "\t3. Group\n\n\t4. Producer\n\n\t5. Price\n\n";
-    cout << "\t6. Back\n\n\t7. Exit\n\n\tEnter one of above numbers: ";
+    while(true) {
 
-    ch = getch();
+        system("cls");
 
-    //search based on name
+        cout << "\n    Based on:\n\n\t1. Name\n\n\t2. Type\n\n";
+        cout << "\t3. Group\n\n\t4. Producer\n\n\t5. Price\n\n";
+        cout << "\t6. Back\n\n\t7. Exit\n\n\tEnter one of above numbers: ";
 
-    if(ch == '1') {
+        ch = getch();
 
-        while(true) {
+        //search based on name
 
-            system("cls");
+        if(ch == '1') {
 
-            cout << "\n\n    (Search here) Enter: " << search;
-            cout << "\n    ----------------------------------------------------";
-            cout << "-------------------------------------------------------\n\n";
+            while(true) {
 
-            for(int j = 0; j < prodlist.size(); j++) {
+                system("cls");
 
-                if(findsubstr(prodlist[j].get_name(), search) && prodlist[j].get_group() == group) {
+                cout << "\n\n    (Search here) Enter: " << search;
+                cout << "\n    ----------------------------------------------------";
+                cout << "-------------------------------------------------------\n\n";
 
-                    if(j < 9) {
+                for(int j = 0; j < prodlist.size(); j++) {
 
-                        cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
+                    if(findsubstr(prodlist[j].get_name(), search) && prodlist[j].get_group() == group) {
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                        if(j < 9) {
 
-                        cout << ' ' << prodlist[j].get_type();
+                            cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_group();
+                            cout << ' ' << prodlist[j].get_type();
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            cout << ' ' << prodlist[j].get_group();
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                    }
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                    else {
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n ";
 
-                        cout << "    " << j + 1 << ". " << prodlist[j].get_name();
+                        }
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                        else {
 
-                        cout << ' ' << prodlist[j].get_type();
+                            cout << "    " << j + 1 << ". " << prodlist[j].get_name();
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_group();
+                            cout << ' ' << prodlist[j].get_type();
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            cout << ' ' << prodlist[j].get_group();
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                    }
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                }
-
-            }
-
-            ch_by_ch = getch();
-
-            if(ch_by_ch == '^') break;
-
-            if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
-            else if(ch_by_ch == '*' && search == "");
-            else search += ch_by_ch;
-
-        }
-
-    }
-
-    //search based on type
-
-    else if(ch == '2') {
-
-        while(true) {
-
-            system("cls");
-
-            cout << "\n\n    (Search here) Enter: " << search;
-            cout << "\n    ----------------------------------------------------";
-            cout << "-------------------------------------------------------\n\n";
-
-            for(int j = 0; j < prodlist.size(); j++) {
-
-                if(findsubstr(prodlist[j].get_type(), search) && prodlist[j].get_group() == group) {
-
-                    if(j < 9) {
-
-                        cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
-
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_type();
-
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_group();
-
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_producer();
-
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_price() << " T";
-
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
-
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
-
-                    }
-
-                    else {
-
-                        cout << "    " << j + 1 << ". " << prodlist[j].get_name();
-
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_type();
-
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_group();
-
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_producer();
-
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_price() << " T";
-
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
-
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
-
+                        }
 
                     }
 
                 }
 
+                ch_by_ch = getch();
+
+                if(ch_by_ch == '^') break;
+
+                if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
+                else if(ch_by_ch == '*' && search == "");
+                else search += ch_by_ch;
+
             }
-
-            ch_by_ch = getch();
-
-            if(ch_by_ch == '^') break;
-
-            if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
-            else if(ch_by_ch == '*' && search == "");
-            else search += ch_by_ch;
 
         }
 
-    }
+        //search based on type
 
-    //search based on group
+        else if(ch == '2') {
 
-    else if(ch == '3') {
+            while(true) {
 
-        while(true) {
+                system("cls");
 
-            system("cls");
+                cout << "\n\n    (Search here) Enter: " << search;
+                cout << "\n    ----------------------------------------------------";
+                cout << "-------------------------------------------------------\n\n";
 
-            cout << "\n\n    (Search here) Enter: " << search;
-            cout << "\n    ----------------------------------------------------";
-            cout << "-------------------------------------------------------\n\n";
+                for(int j = 0; j < prodlist.size(); j++) {
 
-            for(int j = 0; j < prodlist.size(); j++) {
+                    if(findsubstr(prodlist[j].get_type(), search) && prodlist[j].get_group() == group) {
 
-                if(findsubstr(prodlist[j].get_group(), search) && prodlist[j].get_group() == group) {
+                        if(j < 9) {
 
-                    if(j < 9) {
+                            cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
 
-                        cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
+                        }
 
-                    }
+                        else {
 
-                    else {
+                            cout << "    " << j + 1 << ". " << prodlist[j].get_name();
 
-                        cout << "    " << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
 
+                        }
 
                     }
 
                 }
 
+                ch_by_ch = getch();
+
+                if(ch_by_ch == '^') break;
+
+                if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
+                else if(ch_by_ch == '*' && search == "");
+                else search += ch_by_ch;
+
             }
-
-            ch_by_ch = getch();
-
-            if(ch_by_ch == '^') break;
-
-            if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
-            else if(ch_by_ch == '*' && search == "");
-            else search += ch_by_ch;
 
         }
 
-    }
+        //search based on group
 
-    //search based on producer
+        else if(ch == '3') {
 
-    else if(ch == '4') {
+            while(true) {
 
-        while(true) {
+                system("cls");
 
-            system("cls");
+                cout << "\n\n    (Search here) Enter: " << search;
+                cout << "\n    ----------------------------------------------------";
+                cout << "-------------------------------------------------------\n\n";
 
-            cout << "\n\n    (Search here) Enter: " << search;
-            cout << "\n    ----------------------------------------------------";
-            cout << "-------------------------------------------------------\n\n";
+                for(int j = 0; j < prodlist.size(); j++) {
 
-            for(int j = 0; j < prodlist.size(); j++) {
+                    if(findsubstr(prodlist[j].get_group(), search) && prodlist[j].get_group() == group) {
 
-                if(findsubstr(prodlist[j].get_producer(), search) && prodlist[j].get_group() == group) {
+                        if(j < 9) {
 
-                    if(j < 9) {
+                            cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
 
-                        cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
+                        }
 
-                    }
+                        else {
 
-                    else {
+                            cout << "    " << j + 1 << ". " << prodlist[j].get_name();
 
-                        cout << "    " << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
 
+                        }
 
                     }
 
                 }
 
+                ch_by_ch = getch();
+
+                if(ch_by_ch == '^') break;
+
+                if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
+                else if(ch_by_ch == '*' && search == "");
+                else search += ch_by_ch;
+
             }
-
-            ch_by_ch = getch();
-
-            if(ch_by_ch == '^') break;
-
-            if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
-            else if(ch_by_ch == '*' && search == "");
-            else search += ch_by_ch;
 
         }
 
-    }
+        //search based on producer
 
-    //search based on price
+        else if(ch == '4') {
 
-    else if(ch == '5') {
+            while(true) {
 
-        while(true) {
+                system("cls");
 
-            system("cls");
+                cout << "\n\n    (Search here) Enter: " << search;
+                cout << "\n    ----------------------------------------------------";
+                cout << "-------------------------------------------------------\n\n";
 
-            cout << "\n\n    (Search here) Enter: " << search;
-            cout << "\n    ----------------------------------------------------";
-            cout << "-------------------------------------------------------\n\n";
+                for(int j = 0; j < prodlist.size(); j++) {
 
-            string int_string;
+                    if(findsubstr(prodlist[j].get_producer(), search) && prodlist[j].get_group() == group) {
 
-            for(int j = 0; j < prodlist.size(); j++) {
+                        if(j < 9) {
 
-                int_string = to_string(prodlist[j].get_price() && prodlist[j].get_group() == group);
+                            cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
 
-                if(findsubstr(int_string, search)) {
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                    if(j < 9) {
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+                        }
 
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+                        else {
 
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
+                            cout << "    " << j + 1 << ". " << prodlist[j].get_name();
 
-                    }
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
 
-                    else {
+                            cout << ' ' << prodlist[j].get_type();
 
-                        cout << "    " << j + 1 << ". " << prodlist[j].get_name();
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_group();
 
-                        cout << ' ' << prodlist[j].get_type();
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_producer();
 
-                        cout << ' ' << prodlist[j].get_group();
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_price() << " T";
 
-                        cout << ' ' << prodlist[j].get_producer();
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
 
-                        for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
 
-                        cout << ' ' << prodlist[j].get_price() << " T";
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
 
-                        for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
-
-                        cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
-
-                        cout << "    -----------------------------------------------------";
-                        cout << "-------------------------------------------------------\n";
-
+                        }
 
                     }
 
                 }
 
+                ch_by_ch = getch();
+
+                if(ch_by_ch == '^') break;
+
+                if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
+                else if(ch_by_ch == '*' && search == "");
+                else search += ch_by_ch;
+
             }
 
-            ch_by_ch = getch();
+        }
 
-            if(ch_by_ch == '^') break;
+        //search based on price
 
-            if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
-            else if(ch_by_ch == '*' && search == "");
-            else search += ch_by_ch;
+        else if(ch == '5') {
+
+            while(true) {
+
+                system("cls");
+
+                cout << "\n\n    (Search here) Enter: " << search;
+                cout << "\n    ----------------------------------------------------";
+                cout << "-------------------------------------------------------\n\n";
+
+                string int_string;
+
+                for(int j = 0; j < prodlist.size(); j++) {
+
+                    int_string = to_string(prodlist[j].get_price());
+
+                    if(findsubstr(int_string, search) && prodlist[j].get_group() == group) {
+
+                        if(j < 9) {
+
+                            cout << "    0" << j + 1 << ". " << prodlist[j].get_name();
+
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_type();
+
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_group();
+
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_producer();
+
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_price() << " T";
+
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
+
+                        }
+
+                        else {
+
+                            cout << "    " << j + 1 << ". " << prodlist[j].get_name();
+
+                            for(string :: size_type i = 0; i < 35 - prodlist[j].get_name().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_type();
+
+                            for(string :: size_type i = 0; i < 18 - prodlist[j].get_type().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_group();
+
+                            for(string :: size_type i = 0; i < 19 - prodlist[j].get_group().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_producer();
+
+                            for(string :: size_type i = 0; i < 13 - prodlist[j].get_producer().size(); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_price() << " T";
+
+                            for(string :: size_type i = 0; i < 8 - digit_cnt(prodlist[j].get_price()); i++) cout << ' ';
+
+                            cout << ' ' << prodlist[j].get_quantity() << ' ' << endl;
+
+                            cout << "    -----------------------------------------------------";
+                            cout << "-------------------------------------------------------\n";
+
+                        }
+
+                    }
+
+                }
+
+                ch_by_ch = getch();
+
+                if(ch_by_ch == '^') break;
+
+                if(ch_by_ch == '*' && search != "") search.erase(search.size()-1);
+                else if(ch_by_ch == '*' && search == "");
+                else search += ch_by_ch;
+
+            }
+
+        }
+
+        //back
+
+        else if(ch == '6') {
+
+            return;
+
+        }
+
+        //exit
+
+        else if(ch == '7') {
+
+            exit_m();
 
         }
 
     }
 
-    //back
-
-    else if(ch == '6') {
-
-        return;
-
-    }
-
-    //exit
-
-    else if(ch == '7') {
-
-        exit_m();
-
-    }
+    return;
 
 }
 
