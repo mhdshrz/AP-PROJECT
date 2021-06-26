@@ -56,6 +56,10 @@ void search (fslist&, string, list<up_s>&);
 
 bool findsubstr (string, string);
 
+void showfs (fslist&);
+
+void showup (list<up_s>&);
+
 
 //////prototypes end/////////////////////////////////////////////////////////////////////
 
@@ -2159,6 +2163,10 @@ bool findsubstr (string str, string substr) {
 
 void exit_m (list<up_s>& larlist, fslist& prodlist) {
 
+    showup(larlist);
+
+    cin.get();
+
     //updating the file
 
     ofstream ofile, ofile_up;
@@ -2331,15 +2339,15 @@ int lar (char ch, list<up_s>& larlist) {
 
             //check if it's unique
 
-            list<up_s> :: iterator i;
+            list<up_s> :: iterator itr;
 
-            for(i = larlist.begin(); i != larlist.end(); i++) {
+            for(itr = larlist.begin(); itr != larlist.end(); itr++) {
 
-                if(i->get_username() == uptemp_s) break;
+                if(itr->get_username() == uptemp_s) break;
 
             }
 
-            if(i != larlist.end()) cout << "\n\t^ There is another account with this username!\n\n\t    ";
+            if(itr != larlist.end()) cout << "\n\t^ There is another account with this username!\n\n\t    ";
 
             else break;
 
@@ -2477,15 +2485,15 @@ int lar (char ch, list<up_s>& larlist) {
 
             //check if it's unique
 
-            list<up_s> :: iterator i;
+            list<up_s> :: iterator itr;
 
-            for(i = larlist.begin(); i != larlist.end(); i++) {
+            for(itr = larlist.begin(); itr != larlist.end(); itr++) {
 
-                if(i->get_username() == uptemp_s) break;
+                if(itr->get_username() == uptemp_s) break;
 
             }
 
-            if(i != larlist.end()) cout << "\n\t^ There is another account with this username!\n\n\t    ";
+            if(itr != larlist.end()) cout << "\n\t^ There is another account with this username!\n\n\t    ";
 
             else break;
 
@@ -2554,3 +2562,48 @@ void sortfslist (fslist& prodlist) {
 
 
 //////sortfslist function ends//////////////////////////////////////////////////////////////////////
+
+
+
+
+//////showfs function///////////////////////////////////////////////////////////////////////////////
+
+
+void showfs (fslist& prodlist) {
+
+    for(fslist :: iterator itr = prodlist.begin(); itr != prodlist.end(); itr++) {
+
+        cout << itr->get_name() << "  " << itr->get_type() << "  " << itr->get_group() << "  ";
+        cout << itr->get_producer() << "  " << itr->get_price() << "  " << itr->get_quantity();
+        cout << endl << endl;
+
+    }
+
+    return;
+
+}
+
+
+//////showfs function ends//////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////showup function///////////////////////////////////////////////////////////////////////////////
+
+
+void showup (list<up_s>& larlist) {
+
+    for(list<up_s> :: iterator itr = larlist.begin(); itr != larlist.end(); itr++) {
+
+        cout << itr->get_username() << "  " << itr->get_password() << "  " << itr->get_admin_check();
+        cout << endl << endl;
+
+    }
+
+    return;
+
+}
+
+
+//////showup function ends//////////////////////////////////////////////////////////////////////////
