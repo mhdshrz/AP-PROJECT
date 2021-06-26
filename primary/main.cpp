@@ -33,7 +33,7 @@ void show (fslist&);
 void show (string, fslist&);
 //show the whole products within a group
 
-void print_products_out (char, fslist&);
+void print_products_out (char, fslist&, list<up_s>&);
 
 int lar (char, list<up_s>&);
 //0: not successful
@@ -43,15 +43,15 @@ int lar (char, list<up_s>&);
 
 string :: size_type digit_cnt (int);
 
-void exit_m ();
-//exit manually
+void exit_m (list<up_s>&, fslist&);
+//exit manually, exits manually and updates the program's needed files
 
 void sortfslist (fslist&);
 
-void search (fslist&);
+void search (fslist&, list<up_s>&);
 //to search all
 
-void search (fslist&, string);
+void search (fslist&, string, list<up_s>&);
 //to search within a group
 
 bool findsubstr (string, string);
@@ -455,12 +455,15 @@ int main () {
     list<up_s> larlist;
     fslist prodlist;
 
-    foodstuff fstemp;
+    //products file stream
 
     ifstream rfile;
-    rfile.open("E:\\C++ Programs\\PROJECT\\products_list.txt", ios :: in);
+
+    rfile.open("E:\\C++ Programs\\PROJECT\\Files\\products_list.txt", ios :: in);
 
     if(rfile.is_open()) {
+
+        foodstuff fstemp;
 
         string stemp;
         int itemp;
@@ -481,30 +484,180 @@ int main () {
             rfile >> itemp;
             fstemp.set_quantity(itemp);
 
-            prodlist.push_front(fstemp);
-
             rfile.get();
+
+            prodlist.push_front(fstemp);
 
         }
 
+        rfile.close();
+
         sortfslist(prodlist);
 
-        cout << endl << "Files were opened successfully!" << endl << endl;
-        cout << "Press Enter to continue: ";
+        cout << endl << "\n    Products file was opened successfully!\n\n\n\n";
+        cout << "    Press enter to proceed: ";
 
         cin.get();
 
         system("cls");
 
-        //files end
+    }
 
-        print_menu(larlist, prodlist);
-        
-        rfile.close();
+    else {
+
+        cout << "\n\n    Products file was not found. So we are creating the products file ...\n\n\n\n";
+        cout << "    Press enter to proceed: ";
+
+        cin.get();
+
+        fstream file;
+        file.open("E:\\C++ Programs\\PROJECT\\Files\\products_list.txt", ios :: out);
+
+        system("cls");
+
+        if(file.is_open()) {
+
+            cout << "\n\n    Products file was successfully created.\n\n\n\n";
+
+            file.close();
+
+            cout << "    Press enter to proceed: ";
+
+            cin.get();
+
+            system("cls");
+
+        }
+
+        else {
+
+            cout << "\n\n    Sorry, we're having a problem...\n\n";
+
+            exit(0);
+
+        }
 
     }
 
-    else cout << "Files had problems being opened :(" << endl << endl;
+    //usernames and passwords file streams
+
+    ifstream rfile_up;
+
+    rfile_up.open("E:\\C++ Programs\\PROJECT\\Files\\ups_list.txt", ios :: in | ios :: out);
+
+    if(rfile_up.is_open()) {
+
+        up_s uptemp;
+
+        string stemp;
+        bool btemp;
+
+        while(!rfile_up.eof()) {
+
+            getline(rfile_up, stemp);
+            uptemp.set_username(stemp);
+            getline(rfile_up, stemp);
+            uptemp.set_password(stemp);
+
+            rfile_up >> btemp;
+            uptemp.set_admin_check(btemp);
+
+            rfile_up.get();
+
+            larlist.push_front(uptemp);
+
+        }
+
+        rfile_up.close();
+
+        cout << endl << "\n    U&P file was opened successfully!\n\n\n\n";
+        cout << "    Press enter to proceed: ";
+
+        cin.get();
+
+        system("cls");
+
+    }
+
+    else {
+
+        cout << "\n\n    U&P file was not found. So we are creating the U&P file ...\n\n\n\n";
+        cout << "    Press Enter to proceed: ";
+
+        cin.get();
+
+        fstream file_up;
+        file_up.open("E:\\C++ Programs\\PROJECT\\Files\\ups_list.txt", ios :: out);
+
+        system("cls");
+
+        if(file_up.is_open()) {
+
+            cout << "\n\n    U&P file was successfully created.\n\n\n\n";
+
+            file_up.close();
+
+            cout << "    Press enter to proceed: ";
+
+            cin.get();
+
+            system("cls");
+
+        }
+
+        else {
+
+            cout << "\n\n    Sorry, we're having a problem...\n\n";
+
+            exit(0);
+
+        }
+
+    }
+
+    system("cls");
+
+    cout << "\n\n    We're all set!\n\n\n\n";
+    cout << "    Press enter to run the program: ";
+
+    cin.get();
+
+    //program starts
+
+    system("cls");
+
+    print_menu(larlist, prodlist);
+
+    //program ends
+    //updating the files
+
+    ofstream ofile, ofile_up;
+
+    ofile.open("E:\\C++ Programs\\PROJECT\\Files\\products_list.txt", ios :: out | ios :: trunc);
+    ofile_up.open("E:\\C++ Programs\\PROJECT\\Files\\ups_list.txt", ios :: out | ios :: trunc);
+
+    for(fslist :: iterator itr = prodlist.begin(); itr != prodlist.end(); itr++) {
+
+        ofile << itr->get_name() << endl;
+        ofile << itr->get_type() << endl;
+        ofile << itr->get_group() << endl;
+        ofile << itr->get_producer() << endl;
+        ofile << itr->get_price() << endl;
+        ofile << itr->get_quantity() << endl;
+
+    }
+
+    ofile.close();
+
+    for(list<up_s> :: iterator itr = larlist.begin(); itr != larlist.end(); itr++) {
+
+        ofile_up << itr->get_username() << endl;
+        ofile_up << itr->get_password() << endl;
+        ofile_up << itr->get_admin_check() << endl;
+
+    }
+
+    ofile_up.close();
 
     return 0;
 
@@ -555,13 +708,13 @@ void print_menu (list<up_s>& larlist, fslist& prodlist) {
 
                 if(cha == '1') {
 
-                    print_products_out(cha, prodlist);
+                    print_products_out(cha, prodlist, larlist);
 
                 }
 
                 else if(cha == '2') {
 
-                    print_products_out(cha, prodlist);
+                    print_products_out(cha, prodlist, larlist);
 
                 }
 
@@ -575,7 +728,7 @@ void print_menu (list<up_s>& larlist, fslist& prodlist) {
 
                 else if(cha == '4') {
 
-                    exit_m();
+                    exit_m(larlist, prodlist);
 
                 }
 
@@ -609,7 +762,7 @@ void print_menu (list<up_s>& larlist, fslist& prodlist) {
 
         else if(ch == '6') {
 
-            exit_m();
+            exit_m(larlist, prodlist);
 
         }
 
@@ -794,7 +947,7 @@ void show (string group, fslist& prodlist) {
 //////print_products_out function/////////////////////////////////////////////////////////////////
 
 
-void print_products_out (char ch, fslist& prodlist) {
+void print_products_out (char ch, fslist& prodlist, list<up_s>& larlist) {
 
     //show the whole products
 
@@ -815,7 +968,7 @@ void print_products_out (char ch, fslist& prodlist) {
 
             if(cha == '1') {
 
-                search(prodlist);
+                search(prodlist, larlist);
 
             }
 
@@ -827,7 +980,7 @@ void print_products_out (char ch, fslist& prodlist) {
 
             else if(cha == '3') {
 
-                exit_m();
+                exit_m(larlist, prodlist);
 
             }
 
@@ -910,7 +1063,7 @@ void print_products_out (char ch, fslist& prodlist) {
 
                 if(cha == '1') {
 
-                    search(prodlist, *itr);
+                    search(prodlist, *itr, larlist);
 
                 }
 
@@ -922,7 +1075,7 @@ void print_products_out (char ch, fslist& prodlist) {
 
                 else if(cha == '3') {
 
-                    exit_m();
+                    exit_m(larlist, prodlist);
 
                 }
 
@@ -942,10 +1095,10 @@ void print_products_out (char ch, fslist& prodlist) {
 
 
 
-//////search function (1 parameter)/////////////////////////////////////////////////////////////////////////////
+//////search function (2 parameters)/////////////////////////////////////////////////////////////////////////////
 
 
-void search (fslist& prodlist) {
+void search (fslist& prodlist, list<up_s>& larlist) {
 
     string search;
     char ch, ch_by_ch;
@@ -1429,7 +1582,7 @@ void search (fslist& prodlist) {
 
         else if(ch == '7') {
 
-            exit_m();
+            exit_m(larlist, prodlist);
 
         }
 
@@ -1440,15 +1593,15 @@ void search (fslist& prodlist) {
 }
 
 
-//////search function (1 parameter) ends////////////////////////////////////////////////////////////////////////
+//////search function (2 parameters) ends////////////////////////////////////////////////////////////////////////
 
 
 
 
-//////search function (2 parameters)////////////////////////////////////////////////////////////////////////////
+//////search function (3 parameters)////////////////////////////////////////////////////////////////////////////
 
 
-void search (fslist& prodlist, string group) {
+void search (fslist& prodlist, string group, list<up_s>& larlist) {
 
     string search;
     char ch, ch_by_ch;
@@ -1931,7 +2084,7 @@ void search (fslist& prodlist, string group) {
 
         else if(ch == '7') {
 
-            exit_m();
+            exit_m(larlist, prodlist);
 
         }
 
@@ -1942,7 +2095,7 @@ void search (fslist& prodlist, string group) {
 }
 
 
-//////search function (2 parameters) ends///////////////////////////////////////////////////////////////////////
+//////search function (3 parameters) ends///////////////////////////////////////////////////////////////////////
 
 
 
@@ -2004,7 +2157,37 @@ bool findsubstr (string str, string substr) {
 //////exit_m function///////////////////////////////////////////////////////////////////////////////
 
 
-void exit_m () {
+void exit_m (list<up_s>& larlist, fslist& prodlist) {
+
+    //updating the file
+
+    ofstream ofile, ofile_up;
+
+    ofile.open("E:\\C++ Programs\\PROJECT\\Files\\products_list.txt", ios :: out | ios :: trunc);
+    ofile_up.open("E:\\C++ Programs\\PROJECT\\Files\\ups_list.txt", ios :: out | ios :: trunc);
+
+    for(fslist :: iterator itr = prodlist.begin(); itr != prodlist.end(); itr++) {
+
+        ofile << itr->get_name() << endl;
+        ofile << itr->get_type() << endl;
+        ofile << itr->get_group() << endl;
+        ofile << itr->get_producer() << endl;
+        ofile << itr->get_price() << endl;
+        ofile << itr->get_quantity() << endl;
+
+    }
+
+    ofile.close();
+
+    for(list<up_s> :: iterator itr = larlist.begin(); itr != larlist.end(); itr++) {
+
+        ofile_up << itr->get_username() << endl;
+        ofile_up << itr->get_password() << endl;
+        ofile_up << itr->get_admin_check() << endl;
+
+    }
+
+    ofile_up.close();
 
     system("cls");
 
