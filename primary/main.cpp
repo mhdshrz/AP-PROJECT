@@ -1324,6 +1324,26 @@ void print_products_out (char ch, fslist& prodlist, list<up_s>& larlist) {
 
             int x = 1, itr_cnt;
 
+            set<string> :: iterator itr1;
+
+            while(true) {
+
+                for(itr1 = glist.begin(); itr1 != glist.end(); itr1++) {
+
+                    if(*itr1 == "") {
+
+                        break;
+
+                    }
+
+                }
+
+                if(itr1 == glist.end()) break;
+
+                else glist.erase(itr1);
+
+            }
+
             for(set<string> :: iterator itr = glist.begin(); itr != glist.end(); itr++) {
 
                 if(x < 10) {
@@ -1501,6 +1521,26 @@ int print_products_in (char ch, fslist& prodlist, list<up_s>& larlist) {
 
             int x = 1, itr_cnt;
 
+            set<string> :: iterator itr1;
+
+            while(true) {
+
+                for(itr1 = glist.begin(); itr1 != glist.end(); itr1++) {
+
+                    if(*itr1 == "") {
+
+                        break;
+
+                    }
+
+                }
+
+                if(itr1 == glist.end()) break;
+
+                else glist.erase(itr1);
+
+            }
+
             for(set<string> :: iterator itr = glist.begin(); itr != glist.end(); itr++) {
 
                 if(x < 10) {
@@ -1560,7 +1600,7 @@ int print_products_in (char ch, fslist& prodlist, list<up_s>& larlist) {
 
                     xx = search_in(prodlist, *itr, larlist);
 
-                    if(xx = 1) return 1;
+                    if(xx == 1) return 1;
 
                 }
 
@@ -4533,7 +4573,7 @@ void fdelete (fslist& prodlist) {
         if(ch == 'y') break;
 
     }
-    
+
     system("cls");
 
     cout << "\n\n\n    Are you sure?";
