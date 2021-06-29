@@ -1589,12 +1589,22 @@ int print_products_in (char ch, fslist& prodlist, list<up_s>& larlist) {
 
                 show(*itr, prodlist);
 
-                cout << "\n\n    1.Search\n\n    2.Back\n\n    3.Log out\n\n    4.Exit\n\n";
+                cout << "\n\n    1.Buy\n\n    2.Search\n\n    3.Back\n\n    4.Log out\n\n    5.Exit\n\n";
                 cout << "    Enter one of above numbers: ";
 
                 cha = getch();
 
+                //buy
+
                 if(cha == '1') {
+
+                    buy(prodlist);
+
+                }
+
+                //search
+
+                else if(cha == '2') {
 
                     int xx;
 
@@ -1606,7 +1616,7 @@ int print_products_in (char ch, fslist& prodlist, list<up_s>& larlist) {
 
                 //back
 
-                else if(cha == '2') {
+                else if(cha == '3') {
 
                     break;
 
@@ -1614,7 +1624,7 @@ int print_products_in (char ch, fslist& prodlist, list<up_s>& larlist) {
 
                 //log out
 
-                else if(cha == '3') {
+                else if(cha == '4') {
 
                     return 1;
 
@@ -1622,7 +1632,7 @@ int print_products_in (char ch, fslist& prodlist, list<up_s>& larlist) {
 
                 //exit
 
-                else if(cha == '4') {
+                else if(cha == '5') {
 
                     exit_m(larlist, prodlist);
 
@@ -4214,6 +4224,8 @@ void buy (fslist& prodlist) {
 
         }
 
+        system("cls");
+
         cout << "\n\n    Now enter how many you want to purchase and then press enter (enter 0 to exit buying): ";
 
         cin >> y;
@@ -4517,12 +4529,12 @@ void edit (fslist& prodlist) {
 
     }
 
-    prodlist[i].set_name(temp.get_name());
-    prodlist[i].set_type(temp.get_type());
-    prodlist[i].set_group(temp.get_group());
-    prodlist[i].set_producer(temp.get_producer());
-    prodlist[i].set_price(temp.get_price());
-    prodlist[i].set_quantity(temp.get_quantity());
+    prodlist[i - 1].set_name(temp.get_name());
+    prodlist[i - 1].set_type(temp.get_type());
+    prodlist[i - 1].set_group(temp.get_group());
+    prodlist[i - 1].set_producer(temp.get_producer());
+    prodlist[i - 1].set_price(temp.get_price());
+    prodlist[i - 1].set_quantity(temp.get_quantity());
 
     sortfslist(prodlist);
 
